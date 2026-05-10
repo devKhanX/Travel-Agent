@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Agent AI</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #f8f9fc;
+            --surface: #ffffff;
+            --surface2: #f3f5f9;
+            --surface3: #e8ecf2;
+            --border: rgba(0, 0, 0, 0.08);
+            --border2: rgba(0, 0, 0, 0.15);
+            --accent: #02599C; /* Logo Blue */
+            --accent2: #01467a;
+            --accent-dim: rgba(2, 89, 156, 0.1);
+            --gold: #C4985A; /* Logo Gold */
+            --gold-dim: rgba(196, 152, 90, 0.15);
+            --teal: #02599C; /* Re-mapped to blue for consistency */
+            --teal-dim: rgba(2, 89, 156, 0.1);
+            --coral: #C4985A; /* Re-mapped to gold */
+            --coral-dim: rgba(196, 152, 90, 0.1);
+            --green: #2ecc71;
+            --blue: #02599C;
+            --text: #111827;
+            --text2: #4b5563;
+            --text3: #9ca3af;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'DM Sans', sans-serif;
+            --r: 14px;
+            --r-sm: 8px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-mark {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: -0.3px;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: var(--text3);
+            font-weight: 300;
+            margin-top: -2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border2);
+            font-size: 11px;
+            color: var(--text2);
+            font-weight: 300;
+        }
+
+        .pill-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        .btn-new {
+            padding: 7px 16px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--gold-dim);
+            background: var(--surface);
+            color: var(--blue);
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-new:hover {
+            background: rgba(232, 201, 122, 0.2);
+        }
+
+        /* LAYOUT */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* CHAT PANEL */
+        .chat-panel {
+            width: 400px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        #chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        #chat::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        #chat::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 2px;
+        }
+
+        /* WELCOME */
+        .welcome {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+            padding: 30px 20px;
+            gap: 16px;
+        }
+
+        .welcome-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: var(--accent-dim);
+            border: 1px solid var(--gold-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .welcome h2 {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .welcome p {
+            font-size: 13px;
+            color: var(--text2);
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 280px;
+        }
+
+        .suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .suggestion {
+            padding: 9px 14px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border2);
+            background: var(--surface2);
+            color: var(--text2);
+            font-size: 12px;
+            font-family: var(--font-body);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.15s;
+            font-weight: 300;
+        }
+
+        .suggestion:hover {
+            border-color: var(--gold);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* MESSAGES */
+        .msg {
+            display: flex;
+            gap: 8px;
+            animation: fadeUp 0.2s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .msg.user {
+            flex-direction: row-reverse;
+        }
+
+        .av {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .av.user-av {
+            background: var(--accent-dim);
+            border: 1px solid var(--gold-dim);
+            color: var(--accent);
+            font-size: 9px;
+        }
+
+        .av.bot-av {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            font-size: 14px;
+        }
+
+        .bubble {
+            padding: 10px 14px;
+            border-radius: var(--r);
+            font-size: 13px;
+            line-height: 1.7;
+            font-weight: 300;
+            max-width: 300px;
+        }
+
+        .msg.user .bubble {
+            background: var(--surface3);
+            border: 1px solid var(--gold-dim);
+            border-top-right-radius: 4px;
+        }
+
+        .msg.bot .bubble {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-top-left-radius: 4px;
+        }
+
+        .bubble strong {
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        .typing {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 14px;
+        }
+
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text3);
+            animation: bounce 1.2s infinite;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: .15s
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: .3s
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0)
+            }
+
+            40% {
+                transform: translateY(-4px)
+            }
+        }
+
+        /* INPUT */
+        .input-area {
+            padding: 12px 16px 16px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: var(--r);
+            padding: 9px 9px 9px 14px;
+            transition: border-color 0.15s;
+        }
+
+        .input-row:focus-within {
+            border-color: var(--gold);
+        }
+
+        #msg-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 300;
+            resize: none;
+            min-height: 20px;
+            max-height: 100px;
+            line-height: 1.6;
+        }
+
+        #msg-input::placeholder {
+            color: var(--text3);
+        }
+
+        #send-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+
+        #send-btn:hover {
+            background: var(--accent2);
+        }
+
+        #send-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        #send-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .input-hint {
+            font-size: 10px;
+            color: var(--text3);
+            text-align: center;
+            margin-top: 7px;
+            font-weight: 300;
+        }
+
+        /* PLAN PANEL */
+        .plan-panel {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: var(--bg);
+        }
+
+        .plan-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .plan-panel::-webkit-scrollbar-thumb {
+            background: var(--border2);
+            border-radius: 2px;
+        }
+
+        .plan-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 16px;
+            text-align: center;
+            color: var(--text3);
+        }
+
+        .plan-empty-icon {
+            font-size: 48px;
+            opacity: 0.3;
+        }
+
+        .plan-empty p {
+            font-size: 14px;
+            font-weight: 300;
+            max-width: 260px;
+            line-height: 1.7;
+        }
+
+        .plan-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 760px;
+        }
+
+        /* PLAN HEADER */
+        .plan-header {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: var(--r);
+            padding: 20px 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .plan-title {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .plan-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+
+        .meta-tag {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 400;
+            border: 1px solid var(--border2);
+            color: var(--text2);
+        }
+
+        .plan-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .act-btn {
+            padding: 7px 14px;
+            border-radius: var(--r-sm);
+            font-size: 12px;
+            font-family: var(--font-body);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 400;
+        }
+
+        .act-btn.primary {
+            background: var(--accent-dim);
+            border: 1px solid var(--gold-dim);
+            color: var(--accent);
+        }
+
+        .act-btn.primary:hover {
+            background: var(--gold-dim);
+        }
+
+        .act-btn.ghost {
+            background: transparent;
+            border: 1px solid var(--border2);
+            color: var(--text2);
+        }
+
+        .act-btn.ghost:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        /* SECTION CARDS */
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .section-body {
+            padding: 16px 20px;
+        }
+
+        .transport-text {
+            font-size: 13px;
+            line-height: 1.8;
+            font-weight: 300;
+            color: var(--text2);
+            white-space: pre-wrap;
+        }
+
+        /* HOTELS */
+        .hotel-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .hotel-card {
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border2);
+            padding: 14px;
+            background: var(--surface2);
+            transition: border-color 0.15s;
+        }
+
+        .hotel-card:hover {
+            border-color: var(--gold);
+        }
+
+        .hotel-card.recommended {
+            border-color: var(--gold);
+            background: var(--accent-dim);
+        }
+
+        .hotel-tier {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .hotel-tier.budget {
+            color: var(--teal);
+        }
+
+        .hotel-tier.mid {
+            color: var(--accent);
+        }
+
+        .hotel-tier.luxury {
+            color: var(--coral);
+        }
+
+        .hotel-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .hotel-price {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .hotel-price span {
+            font-size: 11px;
+            font-weight: 300;
+            color: var(--text2);
+        }
+
+        .hotel-note {
+            font-size: 11px;
+            color: var(--text2);
+            margin-top: 4px;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* DAYS */
+        .day-card {
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .day-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 16px;
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .day-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 1px solid rgba(232, 201, 122, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .day-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .day-chevron {
+            font-size: 10px;
+            color: var(--text3);
+            transition: transform 0.2s;
+        }
+
+        .day-card.open .day-chevron {
+            transform: rotate(180deg);
+        }
+
+        .day-body {
+            display: none;
+        }
+
+        .day-card.open .day-body {
+            display: block;
+        }
+
+        .time-slot {
+            display: flex;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .time-slot:last-child {
+            border-bottom: none;
+        }
+
+        .slot-time {
+            font-size: 11px;
+            color: var(--text3);
+            font-weight: 400;
+            min-width: 70px;
+            padding-top: 1px;
+            font-family: monospace;
+        }
+
+        .slot-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 4px;
+        }
+
+        .slot-label.morning {
+            color: var(--accent);
+        }
+
+        .slot-label.afternoon {
+            color: var(--teal);
+        }
+
+        .slot-label.evening {
+            color: var(--coral);
+        }
+
+        .slot-text {
+            font-size: 13px;
+            color: var(--text2);
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* FOOD */
+        .food-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .food-item {
+            padding: 12px 14px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .food-item-label {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 5px;
+        }
+
+        .food-item-text {
+            font-size: 12px;
+            color: var(--text2);
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        /* BUDGET */
+        .budget-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .budget-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .budget-row-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .budget-label {
+            font-size: 12px;
+            color: var(--text2);
+            font-weight: 400;
+        }
+
+        .budget-amount {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .budget-bar {
+            height: 5px;
+            background: var(--surface3);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .budget-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .budget-total {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .budget-total-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .budget-total-amount {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* TIPS */
+        .tips-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .tip-card {
+            padding: 12px 14px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+        }
+
+        .tip-card.save {
+            border-color: var(--teal-dim);
+            background: var(--teal-dim);
+        }
+
+        .tip-card.upgrade {
+            border-color: var(--coral-dim);
+            background: var(--coral-dim);
+        }
+
+        .tip-label {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .tip-card.save .tip-label {
+            color: var(--teal);
+        }
+
+        .tip-card.upgrade .tip-label {
+            color: var(--coral);
+        }
+
+        .tip-text {
+            font-size: 12px;
+            color: var(--text2);
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        .raw-text {
+            font-size: 13px;
+            line-height: 1.8;
+            font-weight: 300;
+            color: var(--text2);
+            white-space: pre-wrap;
+        }
+
+        .err-toast {
+            background: var(--coral-dim);
+            border: 1px solid var(--coral-dim);
+            border-radius: var(--r-sm);
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--coral);
+            text-align: center;
+        }
+
+        /* WEATHER */
+        .weather-grid {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .forecast-day {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            text-align: center;
+            min-width: 82px;
+        }
+
+        .forecast-date {
+            font-size: 10px;
+            color: var(--text3);
+            margin-bottom: 4px;
+        }
+
+        .forecast-temp {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .forecast-cond {
+            font-size: 10px;
+            color: var(--text2);
+            margin-top: 3px;
+        }
+
+        /* TRAVEL TIME */
+        .travel-stats {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .travel-stat-label {
+            font-size: 10px;
+            color: var(--text3);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+
+        .travel-stat-val {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--teal);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-mark">
+                <svg viewBox="0 0 100 100" width="38" height="38">
+                    <path d="M50 95 C 50 95 10 60 10 35 C 10 15 30 5 50 5 C 70 5 90 15 90 35 C 90 60 50 95 50 95 Z" fill="none" stroke="var(--gold)" stroke-width="8" stroke-linejoin="round"/>
+                    <path d="M40 30 C 40 20 60 20 60 30 C 60 40 40 40 40 50" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M20 65 Q 40 70 55 25" fill="none" stroke="var(--blue)" stroke-width="8" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div style="display: flex; flex-direction: column; justify-content: center;">
+                <div class="logo-text" style="color: #2b2b2b;">Rahnum<span style="color: var(--blue); font-style: italic;">AI</span></div>
+                <div class="logo-sub" style="letter-spacing: 0.5px; color: var(--text2);">THE CARAVAN OF TRAVEL</div>
+                <div class="logo-sub" style="text-transform: lowercase; font-size: 9px; margin-top: 1px; color: var(--gold); letter-spacing: 1px;">soch se safar tak</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="pill">
+                <div class="pill-dot"></div>Live
+            </div>
+            <button class="btn-new" onclick="newTrip()">+ New trip</button>
+        </div>
+    </header>
+
+    <div class="main">
+        <div class="chat-panel">
+            <div id="chat">
+                <div class="welcome" id="welcome">
+                    <div class="welcome-icon">🌍</div>
+                    <h2>Where to next?</h2>
+                    <p>Tell me your destination, budget and days — I'll build a complete itinerary.</p>
+                    <div class="suggestions">
+                        <button class="suggestion" onclick="useSugg(this)">Peshawar → Nathia Gali, 3 days, $400</button>
+                        <button class="suggestion" onclick="useSugg(this)">Karachi to Islamabad, 3 days, $500</button>
+                        <button class="suggestion" onclick="useSugg(this)">Lahore to Bangkok, 7 days, $2000</button>
+                        <button class="suggestion" onclick="useSugg(this)">Islamabad to Dubai, 4 days, $1200</button>
+                    </div>
+                </div>
+            </div>
+            <div class="input-area">
+                <div class="input-row">
+                    <textarea id="msg-input" rows="1" placeholder="Where do you want to go?"
+                        onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+                    <button id="send-btn" onclick="send()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="input-hint">Enter to send · Shift+Enter for new line</p>
+            </div>
+        </div>
+
+        <div class="plan-panel" id="plan-panel">
+            <div class="plan-empty" id="plan-empty">
+                <div class="plan-empty-icon">🗺️</div>
+                <p>Your travel plan will appear here once you describe your trip.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '';
+        let sessionId = '';
+        let isLoading = false;
+
+        async function initSession() {
+            try {
+                const r = await fetch(`${API}/session/new`, { method: 'POST' });
+                const d = await r.json();
+                sessionId = d.session_id;
+            } catch (e) { console.error(e); }
+        }
+
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+        }
+
+        function useSugg(btn) {
+            const inp = document.getElementById('msg-input');
+            inp.value = btn.textContent;
+            autoResize(inp);
+            send();
+        }
+
+        function hideWelcome() {
+            const w = document.getElementById('welcome');
+            if (w) w.remove();
+        }
+
+        function escHtml(t) {
+            return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function appendMsg(role, text) {
+            hideWelcome();
+            const chat = document.getElementById('chat');
+            const wrap = document.createElement('div');
+            wrap.className = `msg ${role}`;
+            const av = document.createElement('div');
+            av.className = `av ${role === 'user' ? 'user-av' : 'bot-av'}`;
+            av.textContent = role === 'user' ? 'YOU' : '✈';
+            const bub = document.createElement('div');
+            bub.className = 'bubble';
+            bub.innerHTML = role === 'user'
+                ? escHtml(text)
+                : escHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            wrap.appendChild(av);
+            wrap.appendChild(bub);
+            chat.appendChild(wrap);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showTyping() {
+            hideWelcome();
+            const chat = document.getElementById('chat');
+            const wrap = document.createElement('div');
+            wrap.className = 'msg bot'; wrap.id = 'typing';
+            const av = document.createElement('div');
+            av.className = 'av bot-av'; av.textContent = '✈';
+            const bub = document.createElement('div');
+            bub.className = 'bubble';
+            bub.innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+            wrap.appendChild(av); wrap.appendChild(bub);
+            chat.appendChild(wrap);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('typing');
+            if (el) el.remove();
+        }
+
+        function showErr(msg) {
+            const chat = document.getElementById('chat');
+            const e = document.createElement('div');
+            e.className = 'err-toast'; e.textContent = msg;
+            chat.appendChild(e);
+            chat.scrollTop = chat.scrollHeight;
+            setTimeout(() => e.remove(), 6000);
+        }
+
+        async function send() {
+            if (isLoading) return;
+            const inp = document.getElementById('msg-input');
+            const text = inp.value.trim();
+            if (!text) return;
+
+            isLoading = true;
+            document.getElementById('send-btn').disabled = true;
+            inp.value = ''; inp.style.height = 'auto';
+            appendMsg('user', text);
+            showTyping();
+
+            try {
+                const res = await fetch(`${API}/plan`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, session_id: sessionId })
+                });
+                if (!res.ok) { const err = await res.json(); throw new Error(err.detail || 'Server error'); }
+                const data = await res.json();
+                removeTyping();
+                sessionId = data.session_id;
+
+                if (data.status === 'plan_ready') {
+                    appendMsg('bot', '✅ Your travel plan is ready — see the panel →');
+                    renderPlan(data.reply, data.slots, data.budget_breakdown, data.weather, data.travel_info);
+                } else {
+                    appendMsg('bot', data.reply);
+                }
+            } catch (e) {
+                removeTyping();
+                showErr(`Error: ${e.message}`);
+            } finally {
+                isLoading = false;
+                document.getElementById('send-btn').disabled = false;
+                inp.focus();
+            }
+        }
+
+        async function newTrip() {
+            sessionId = '';
+            document.getElementById('chat').innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🌍</div>
+      <h2>Where to next?</h2>
+      <p>Tell me your destination, budget and days — I'll build a complete itinerary.</p>
+      <div class="suggestions">
+        <button class="suggestion" onclick="useSugg(this)">Peshawar → Nathia Gali, 3 days, $400</button>
+        <button class="suggestion" onclick="useSugg(this)">Karachi to Islamabad, 3 days, $500</button>
+        <button class="suggestion" onclick="useSugg(this)">Lahore to Bangkok, 7 days, $2000</button>
+        <button class="suggestion" onclick="useSugg(this)">Islamabad to Dubai, 4 days, $1200</button>
+      </div>
+    </div>`;
+            document.getElementById('plan-panel').innerHTML = `
+    <div class="plan-empty" id="plan-empty">
+      <div class="plan-empty-icon">🗺️</div>
+      <p>Your travel plan will appear here once you describe your trip.</p>
+    </div>`;
+            await initSession();
+        }
+
+        // ── RENDER PLAN ──
+        function renderPlan(raw, slots, budget, weather, travelInfo) {
+            const panel = document.getElementById('plan-panel');
+            const dest = slots?.destination || 'Your Trip';
+            const origin = slots?.origin || '';
+            const days = slots?.days || '';
+            const totalBudget = slots?.budget || '';
+            const style = slots?.style || 'mid';
+
+            const sections = parseRawPlan(raw);
+            let html = '<div class="plan-content">';
+
+            // ── Plan header ──
+            html += `<div class="plan-header">
+    <div>
+      <div class="plan-title">${escHtml(dest)}</div>
+      <div class="plan-meta">
+        ${origin ? `<span class="meta-tag">✈ From ${escHtml(origin)}</span>` : ''}
+        ${days ? `<span class="meta-tag">📅 ${days} days</span>` : ''}
+        ${totalBudget ? `<span class="meta-tag">💰 $${totalBudget}</span>` : ''}
+        <span class="meta-tag">${escHtml(style)} style</span>
+      </div>
+    </div>
+    <div class="plan-actions">
+      <button class="act-btn primary" onclick="copyPlan()">📋 Copy plan</button>
+      <button class="act-btn ghost"   onclick="newTrip()">+ New trip</button>
+    </div>
+  </div>`;
+
+            // ── Weather card ──
+            if (weather && weather.status === 'ok') {
+                html += `<div class="section-card">
+      <div class="section-head">
+        <div class="section-icon" style="background:#74c0fc22;border:1px solid #74c0fc33">🌤️</div>
+        <span class="section-title">Live weather · ${escHtml(weather.city || dest)}</span>
+      </div>
+      <div class="section-body">
+        <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div style="font-family:var(--font-display);font-size:42px;font-weight:700;color:var(--accent);line-height:1">${weather.temp_c}°C</div>
+            <div style="font-size:13px;color:var(--text2);margin-top:6px">${escHtml(weather.condition)}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px">
+              Feels like ${weather.feels_like}°C &nbsp;·&nbsp;
+              Humidity ${weather.humidity}% &nbsp;·&nbsp;
+              Wind ${weather.wind_kph} km/h
+            </div>
+          </div>
+          ${weather.forecast && weather.forecast.length ? `
+          <div class="weather-grid">
+            ${weather.forecast.map(d => `
+              <div class="forecast-day">
+                <div class="forecast-date">${d.date.slice(5)}</div>
+                <div class="forecast-temp">${d.temp_min}°–${d.temp_max}°</div>
+                <div class="forecast-cond">${escHtml(d.condition)}</div>
+              </div>`).join('')}
+          </div>` : ''}
+        </div>
+      </div>
+    </div>`;
+            }
+
+            // ── Travel time card ──
+            if (travelInfo && travelInfo.status === 'ok') {
+                html += `<div class="section-card">
+      <div class="section-head">
+        <div class="section-icon" style="background:#4ecdc422;border:1px solid #4ecdc433">🗺️</div>
+        <span class="section-title">Real travel data</span>
+      </div>
+      <div class="section-body">
+        <div class="travel-stats">
+          <div>
+            <div class="travel-stat-label">Drive time</div>
+            <div class="travel-stat-val">${escHtml(travelInfo.duration)}</div>
+          </div>
+          <div>
+            <div class="travel-stat-label">Distance</div>
+            <div class="travel-stat-val">${escHtml(travelInfo.distance)}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+            }
+
+            // ── Transport ──
+            if (sections.transport) {
+                html += sCard('🚆', 'Transport plan', '#74c0fc',
+                    `<p class="transport-text">${escHtml(sections.transport)}</p>`);
+            }
+
+            // ── Hotels ──
+            if (sections.hotels) {
+                html += sCard('🏨', 'Hotel options', '#e8c97a', renderHotels(sections.hotels));
+            }
+
+            // ── Days ──
+            if (sections.days.length > 0) {
+                let dHtml = '';
+                sections.days.forEach((d, i) => { dHtml += renderDay(d, i + 1); });
+                html += sCard('🗓️', 'Day-by-day itinerary', '#4ecdc4', dHtml);
+            }
+
+            // ── Food ──
+            if (sections.food) {
+                html += sCard('🍽️', 'Food highlights', '#ff6b6b', renderFood(sections.food));
+            }
+
+            // ── Budget ──
+            if (budget) {
+                html += sCard('💰', 'Budget breakdown', '#51cf66', renderBudget(budget, totalBudget));
+            }
+
+            // ── Tips ──
+            if (sections.tips) {
+                html += sCard('💡', 'Tips', '#e8c97a', renderTips(sections.tips));
+            }
+
+            // Fallback raw
+            if (!sections.transport && !sections.hotels && sections.days.length === 0) {
+                html += `<div class="section-card"><div class="section-body"><p class="raw-text">${escHtml(raw)}</p></div></div>`;
+            }
+
+            html += '</div>';
+            panel.innerHTML = html;
+
+            setTimeout(() => {
+                document.querySelectorAll('.budget-fill[data-w]').forEach(el => {
+                    el.style.width = el.dataset.w + '%';
+                });
+                const first = document.querySelector('.day-card');
+                if (first) first.classList.add('open');
+            }, 100);
+        }
+
+        function sCard(icon, title, color, body) {
+            return `<div class="section-card">
+    <div class="section-head">
+      <div class="section-icon" style="background:${color}22;border:1px solid ${color}33">${icon}</div>
+      <span class="section-title">${title}</span>
+    </div>
+    <div class="section-body">${body}</div>
+  </div>`;
+        }
+
+        function parseRawPlan(raw) {
+            const r = { transport: '', hotels: '', days: [], food: '', tips: '' };
+            const t = raw.replace(/\r\n/g, '\n');
+
+            const tm = t.match(/🚆[^\n]*\n([\s\S]*?)(?=🏨|🗓|🍽|💰|💡|$)/);
+            if (tm) r.transport = tm[1].trim();
+
+            const hm = t.match(/🏨[^\n]*\n([\s\S]*?)(?=🗓|🍽|💰|💡|$)/);
+            if (hm) r.hotels = hm[1].trim();
+
+            const im = t.match(/🗓[^\n]*\n([\s\S]*?)(?=🍽|💰|💡|$)/);
+            if (im) {
+                const blocks = im[1].split(/(?=\bDay\s*\d+|\bDAY\s*\d+)/i).filter(b => b.trim());
+                r.days = blocks;
+            }
+
+            const fm = t.match(/🍽[^\n]*\n([\s\S]*?)(?=💰|💡|$)/);
+            if (fm) r.food = fm[1].trim();
+
+            const tipm = t.match(/💡[^\n]*\n([\s\S]*?)$/);
+            if (tipm) r.tips = tipm[1].trim();
+
+            return r;
+        }
+
+        function renderHotels(text) {
+            const lines = text.split('\n').filter(l => l.trim());
+            const tiers = [
+                { key: 'budget', label: 'Budget', emoji: '🏕️' },
+                { key: 'mid', label: 'Mid-range ★', emoji: '🏩' },
+                { key: 'luxury', label: 'Luxury', emoji: '🏰' },
+            ];
+            const optLines = lines.filter(l => /option|\$|budget|mid|luxury/i.test(l));
+
+            let html = '<div class="hotel-grid">';
+            tiers.forEach((t, i) => {
+                const line = optLines[i] || lines[i] || '';
+                const price = (line.match(/\$[\d,]+/) || [''])[0];
+                const nameM = line.match(/[-:]\s*([^~$\(\n]{3,40})/);
+                const name = nameM ? nameM[1].trim() : `Option ${i + 1}`;
+                const isRec = t.key === 'mid';
+                html += `<div class="hotel-card ${isRec ? 'recommended' : ''}">
+      <div class="hotel-tier ${t.key}">${t.label}</div>
+      <div class="hotel-name">${t.emoji} ${escHtml(name.substring(0, 28))}</div>
+      <div class="hotel-price">${price || '–'}<span>/night</span></div>
+      <div class="hotel-note">${isRec ? '✓ Recommended for your budget' : ''}</div>
+    </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function renderDay(dayText, num) {
+            const lines = dayText.split('\n').filter(l => l.trim());
+            const rawTitle = lines[0] || '';
+            const title = rawTitle.replace(/^Day\s*\d+[:\-.]?\s*/i, '').trim() || `Day ${num}`;
+
+            const slots = [];
+            let cur = null;
+            lines.slice(1).forEach(l => {
+                const lm = l.match(/\b(Morning|Afternoon|Evening|Night)\b/i);
+                const tm = l.match(/(\d{1,2}:\d{2}\s*(?:AM|PM)?)/i);
+                if (lm) {
+                    if (cur) slots.push(cur);
+                    cur = { label: lm[1], time: tm ? tm[1] : '', items: [] };
+                } else if (cur) {
+                    const clean = l.replace(/^[-*•]\s*/, '').trim();
+                    if (clean) cur.items.push(clean);
+                }
+            });
+            if (cur) slots.push(cur);
+
+            let bodyHtml = '';
+            if (slots.length === 0) {
+                bodyHtml = `<div class="time-slot"><div class="slot-text">${escHtml(lines.slice(1).join(' '))}</div></div>`;
+            } else {
+                slots.forEach(s => {
+                    const lc = s.label.toLowerCase();
+                    const defTime = lc === 'morning' ? '09:00' : lc === 'afternoon' ? '13:00' : lc === 'evening' ? '18:00' : '';
+                    bodyHtml += `<div class="time-slot">
+        <div class="slot-time">${escHtml(s.time || defTime)}</div>
+        <div style="flex:1">
+          <div class="slot-label ${lc}">${escHtml(s.label)}</div>
+          <div class="slot-text">${s.items.map(escHtml).join('<br>') || '–'}</div>
+        </div>
+      </div>`;
+                });
+            }
+
+            return `<div class="day-card" onclick="toggleDay(this)">
+    <div class="day-header">
+      <div class="day-num">${num}</div>
+      <div class="day-title">${escHtml(title || `Day ${num}`)}</div>
+      <div class="day-chevron">▼</div>
+    </div>
+    <div class="day-body">${bodyHtml}</div>
+  </div>`;
+        }
+
+        function renderFood(text) {
+            const lines = text.split('\n').filter(l => l.trim()).map(l => l.replace(/^[-*•]\s*/, ''));
+            const buckets = [
+                { label: 'Must-try dishes', items: lines.slice(0, 3) },
+                { label: 'Best local spots', items: lines.slice(3, 6) },
+                { label: 'Price range', items: lines.slice(6, 8) },
+                { label: 'Local tips', items: lines.slice(8, 10) },
+            ].filter(b => b.items.length);
+
+            let html = '<div class="food-grid">';
+            buckets.forEach(b => {
+                html += `<div class="food-item">
+      <div class="food-item-label">${b.label}</div>
+      <div class="food-item-text">${b.items.map(escHtml).join('<br>')}</div>
+    </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        function renderBudget(budget, total) {
+            const meta = {
+                transport: { label: 'Transport', color: '#74c0fc' },
+                hotel: { label: 'Accommodation', color: '#e8c97a' },
+                food: { label: 'Food & dining', color: '#ff6b6b' },
+                activities: { label: 'Activities', color: '#4ecdc4' },
+                buffer: { label: 'Emergency buffer', color: '#888780' },
+            };
+            const totalVal = Object.values(budget).reduce((a, b) => a + b, 0);
+            let html = '<div class="budget-rows">';
+            Object.entries(budget).forEach(([k, v]) => {
+                const m = meta[k] || { label: k, color: '#888' };
+                const pct = Math.round(v / totalVal * 100);
+                html += `<div class="budget-row">
+      <div class="budget-row-top">
+        <span class="budget-label">${m.label}</span>
+        <span class="budget-amount">$${Number(v).toLocaleString()}</span>
+      </div>
+      <div class="budget-bar">
+        <div class="budget-fill" data-w="${pct}" style="width:0%;background:${m.color}"></div>
+      </div>
+    </div>`;
+            });
+            html += `</div><div class="budget-total">
+    <span class="budget-total-label">Total budget</span>
+    <span class="budget-total-amount">$${Number(total || totalVal).toLocaleString()}</span>
+  </div>`;
+            return html;
+        }
+
+        function renderTips(text) {
+            const lines = text.split('\n').filter(l => l.trim()).map(l => l.replace(/^[-*•]\s*/, ''));
+            const mid = Math.ceil(lines.length / 2);
+            return `<div class="tips-grid">
+    <div class="tip-card save">
+      <div class="tip-label">💚 Save money</div>
+      <div class="tip-text">${lines.slice(0, mid).map(escHtml).join('<br>')}</div>
+    </div>
+    <div class="tip-card upgrade">
+      <div class="tip-label">🔥 Luxury upgrade</div>
+      <div class="tip-text">${lines.slice(mid).map(escHtml).join('<br>')}</div>
+    </div>
+  </div>`;
+        }
+
+        function toggleDay(card) { card.classList.toggle('open'); }
+
+        function copyPlan() {
+            const text = document.getElementById('plan-panel').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.act-btn.primary');
+                const orig = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => btn.textContent = orig, 2000);
+            });
+        }
+
+        initSession();
+        document.getElementById('msg-input').focus();
+    </script>
+</body>
+
+</html>
